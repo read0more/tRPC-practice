@@ -1,69 +1,35 @@
-import React, { useState } from "react";
-import ReactDOM from "react-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { trpc } from "../trpc";
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
-import "./index.scss";
-
-const client = new QueryClient();
-
-const AppContent = () => {
-  const hello = trpc.useQuery(["hello"]);
-  const getMessage = trpc.useQuery(["getMessages", 5]);
-  const addMessage = trpc.useMutation("addMessage");
-  const [user, setUser] = useState("");
-  const [message, setMessage] = useState("");
-
-  const onAdd = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    addMessage.mutate({
-      user,
-      message,
-    }, {
-      onSuccess: () => {
-        // 이거 두 개 뭔차이인지
-        // getMessage.refetch();
-        setMessage("");
-        client.invalidateQueries(["getMessages"]);
-      }
-    });
-  };
+function App() {
+  const [count, setCount] = useState(0)
 
   return (
-    <div className='mt-10 text-3xl mx-auto max-w-6xl'>
-      {JSON.stringify(getMessage.data)}
-      <form onSubmit={onAdd}>
-        <input
-          type='text'
-          value={user}
-          onChange={(e) => setUser(e.target.value)}
-          style={{ border: '1px solid black' }}
-        />
-        <input
-          type='text'
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          style={{ border: '1px solid black' }}
-        />
-          <button type="submit">Add</button>
-        </form>
+    <div className="App">
+      <div>
+        <a href="https://vitejs.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://reactjs.org" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
     </div>
-  );
-};
+  )
+}
 
-const App = () => {
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
-      url: "http://localhost:8080/trpc",
-    })
-  );
-
-  return (
-    <trpc.Provider client={trpcClient} queryClient={client}>
-      <QueryClientProvider client={client}>
-        <AppContent />
-      </QueryClientProvider>
-    </trpc.Provider>
-  );
-};
-ReactDOM.render(<App />, document.getElementById("app"));
+export default App
